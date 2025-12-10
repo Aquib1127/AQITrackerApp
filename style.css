@@ -1,10 +1,12 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start; 
+    padding: 20px;
+    box-sizing: border-box;
     margin: 0;
 }
 
@@ -14,7 +16,9 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     text-align: center;
-    width: 350px;
+    margin: auto; 
+    width: 100%;
+    max-width: 450px;
 }
 
 .search-section {
@@ -41,4 +45,62 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Result Section Styling */
+.result-container {
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.aqi-box {
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    margin: 15px 0;
+    transition: background-color 0.3s;
+}
+
+#aqi-value {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+#aqi-status {
+    font-size: 1.2rem;
+    margin-top: 5px;
+    text-transform: uppercase;
+}
+
+.pollutants ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.pollutants li {
+    background: #eee;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Color-Coded AQI Indicators */
+.good { background-color: #28a745; }
+.moderate { background-color: #ffc107; color: black; }
+.sensitive { background-color: #fd7e14; }
+.unhealthy { background-color: #dc3545; }
+.very-unhealthy { background-color: #6f42c1; }
+.hazardous { background-color: #721c24; }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

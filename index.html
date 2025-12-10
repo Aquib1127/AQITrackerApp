@@ -18,10 +18,21 @@
             <button id="search-btn">Search</button>
         </div>
 
-        <div id="aqi-result" class="result-container">
-            <p>Enter a city to check the air quality.</p>
+        <div id="aqi-result" class="result-container" style="display: none;">
+            <h2 id="city-name">City Name</h2>
+            
+            <div class="aqi-box" id="aqi-box">
+                <span id="aqi-value">--</span>
+                <p id="aqi-status">--</p>
+            </div>
+        
+            <div class="pollutants">
+                <h3>Pollutants</h3>
+                <ul id="pollutant-list">
+                    </ul>
+            </div>
         </div>
-
+        <p id="error-msg" class="error"></p>
     </div>
 
     <script src="app.js"></script>
