@@ -18,8 +18,11 @@
             <button id="search-btn">Search</button>
         </div>
 
+        <div id="loader" class="loader" style="display: none;"></div>
+
         <div id="aqi-result" class="result-container" style="display: none;">
             <h2 id="city-name">City Name</h2>
+            <p id="last-updated" class="time-info">Updated: --</p>
             
             <div class="aqi-box" id="aqi-box">
                 <span id="aqi-value">--</span>
@@ -28,8 +31,7 @@
         
             <div class="pollutants">
                 <h3>Pollutants</h3>
-                <ul id="pollutant-list">
-                    </ul>
+                <ul id="pollutant-list"></ul>
             </div>
         </div>
         <p id="error-msg" class="error"></p>
