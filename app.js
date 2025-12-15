@@ -7,18 +7,26 @@ const errorMsg = document.getElementById("error-msg");
 const loader = document.getElementById("loader");
 const welcomeMsg = document.getElementById("welcome-msg");
 
+// Weather Elements
+const tempEl = document.getElementById("temp-val");
+const humidityEl = document.getElementById("humidity-val");
+const windEl = document.getElementById("wind-val");
+
 // Elements to update
 const cityNameEl = document.getElementById("city-name");
 const aqiValueEl = document.getElementById("aqi-value");
 const aqiStatusEl = document.getElementById("aqi-status");
-const aqiBox = document.getElementById("aqi-box");
-const pollutantList = document.getElementById("pollutant-list");
+const aqiCard = document.getElementById("aqi-card"); 
 const lastUpdatedEl = document.getElementById("last-updated");
-const gaugeFill = document.getElementById("gauge-fill");
 const themeToggle = document.getElementById("theme-toggle");
+const aqiMarker = document.getElementById("aqi-marker");
 const recentList = document.getElementById("recent-list");
 const clearBtn = document.getElementById("clear-btn");
+const locateBtn = document.getElementById("locate-btn");
 
+let myChart = null;
+
+// CLEAR BUTTON LOGIC
 cityInput.addEventListener("input", () => {
     if (cityInput.value.length > 0) {
         clearBtn.style.display = "flex";
@@ -30,6 +38,27 @@ clearBtn.addEventListener("click", () => {
     cityInput.value = "";
     clearBtn.style.display = "none";
     cityInput.focus();
+});
+
+// LOCATE ME BUTTON LOGIC
+locateBtn.addEventListener("click", () => {
+    if (navigator.geolocation) {
+        locateBtn.innerText = "📍 Locating...";      
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;              
+                getAQIData(`geo:${lat};${lon}`);
+                locateBtn.innerText = "📍 Use My Current Location";
+            },
+            () => {
+                showError("Unable to retrieve your location.");
+                locateBtn.innerText = "📍 Use My Current Location";
+            }
+        );
+    } else {
+        showError("Geolocation is not supported by this browser.");
+    }
 });
 
 // TOGGLE LOGIC
@@ -89,10 +118,8 @@ cityInput.addEventListener("keypress", (e) => {
 });
 
 function getAQIData(city) {
-    // Construct the API URL 
     const url = `https://api.waqi.info/feed/${city}/?token=${apiKey}`;
 
-    // Reset UI & Show Loader
     errorMsg.innerText = "";
     resultContainer.style.display = "none";
     welcomeMsg.style.display = "none";
@@ -101,7 +128,6 @@ function getAQIData(city) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            // Hide Loader when data returns
             loader.style.display = "none";
             if (data.status === "ok") {
                 updateRecentSearches(city);
@@ -111,6 +137,7 @@ function getAQIData(city) {
             }
         })
         .catch(error => {
+            console.error(error); // Log error to see details
             loader.style.display = "none";
             showError("Network error. Please check your internet connection.");
         });
@@ -128,21 +155,42 @@ function displayAQI(data) {
 
     const status = getAQIStatus(aqi);
     aqiStatusEl.innerText = status.label;
+    aqiCard.className = "card aqi-card"; 
+    aqiCard.classList.add(status.className);
 
-    aqiBox.className = "aqi-box"; 
-    aqiBox.classList.add(status.className);
-
-    // Animate Gauge
+    // Gauge Animation
     setTimeout(() => {
-        const percentage = Math.min((aqi / 500) * 100, 100); 
-        gaugeFill.style.width = `${percentage}%`;
+        let percentage = (aqi / 500) * 100;
+        if (percentage > 100) percentage = 100;
+        if (percentage < 0) percentage = 0;
+        if(aqiMarker) aqiMarker.style.left = `${percentage}%`; 
     }, 100);
 
+    // WEATHER DATA
+    const iaqi = data.iaqi || {};
+    if (iaqi.t) {
+        tempEl.innerText = `${Math.round(iaqi.t.v)}°C`;
+    } else {
+        tempEl.innerText = "N/A";
+    }
+    if (iaqi.h) {
+        humidityEl.innerText = `${Math.round(iaqi.h.v)}%`;
+    } else {
+        humidityEl.innerText = "N/A";
+    }
+    if (iaqi.w) {
+        windEl.innerText = `${iaqi.w.v.toFixed(1)} m/s`;
+    } else {
+        windEl.innerText = "N/A";
+    }
+
+    // Display Pollutants
     const pollutantNames = {
         "pm25": "PM2.5", "pm10": "PM10", "o3": "O3",
         "no2": "NO2", "so2": "SO2", "co": "CO"
     };
 
+    const pollutantList = document.getElementById("pollutant-list");
     pollutantList.innerHTML = "";
     if (data.iaqi) {
         for (const [key, value] of Object.entries(data.iaqi)) {
@@ -153,7 +201,50 @@ function displayAQI(data) {
             }
         }
     }
+    // Render Chart
+    if (data.forecast && data.forecast.daily && data.forecast.daily.pm25) {
+        renderChart(data.forecast.daily.pm25);
+    }
     resultContainer.style.display = "block";
+}
+
+// CHART FUNCTION
+function renderChart(dailyData) {
+    const ctx = document.getElementById('aqiChart').getContext('2d');
+    const labels = dailyData.map(d => d.day); // Dates
+    const values = dailyData.map(d => d.avg); // AQI Values (Average)
+    if (myChart) {
+        myChart.destroy();
+    }
+    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'PM2.5 AQI (Daily Avg)',
+                data: values,
+                backgroundColor: '#d32f2f',
+                borderRadius: 4,
+                hoverBackgroundColor: '#b71c1c'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    grid: { display: false } 
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
 }
 
 function showError(message) {

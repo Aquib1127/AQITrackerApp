@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Air Quality Index Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,8 +29,8 @@
             </div>
 
             <select class="lang-select">
-                <option value="en">🇺🇸 English</option>
-                <option value="hi">🇮🇳 Hindi</option>
+                <option value="en">UK-English</option>
+                <option value="hi">IN-English</option>
             </select>
 
             <button id="theme-toggle" class="theme-btn">🌙</button>
@@ -38,24 +39,78 @@
 
     <div class="app-container">
         <div id="loader" class="loader" style="display: none;"></div>
-
         <div id="aqi-result" class="result-container" style="display: none;">
             <div class="result-header">
                 <h2 id="city-name">City Name</h2>
                 <p id="last-updated" class="time-info">Updated: --</p>
             </div>
-            
-            <div class="aqi-box" id="aqi-box">
-                <div class="score-display">
-                    <span id="aqi-value">--</span>
-                    <p id="aqi-status">--</p>
+        
+            <div class="dashboard-grid">                
+                <div class="card aqi-card" id="aqi-card">
+                    <h3>Air Quality</h3>
+                    
+                    <div class="aqi-content">
+                        <div class="score-display">
+                            <span id="aqi-value" class="aqi-value-large">--</span>
+                            <p id="aqi-status" class="aqi-status-text">--</p>
+                        </div>
+                        
+                        <div class="aqi-gauge">
+                            <div class="aqi-marker" id="aqi-marker"></div>
+                        </div>
+                        
+                        <div class="gauge-labels">
+                            <span class="lbl-good">Good</span>
+                            <span class="lbl-mod">Mod</span>
+                            <span class="lbl-sens">Poor</span>
+                            <span class="lbl-un">Unhealthy</span>
+                            <span class="lbl-very">Severe</span>
+                            <span class="lbl-haz">Hazardous</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="aqi-gauge">
-                    <div class="gauge-fill" id="gauge-fill"></div>
+        
+                <div class="card weather-card">
+                    <h3>Weather Details</h3>                  
+                    <div class="weather-content">
+                        <div class="weather-main">
+                            <span class="weather-icon-large">🌤️</span> 
+                            <div>
+                                <strong id="temp-val" class="temp-large">--</strong>
+                                <p class="weather-label">Temperature</p>
+                            </div>
+                        </div>
+                
+                        <div class="weather-divider"></div>
+                
+                        <div class="weather-details-row">
+                            <div class="weather-detail-item">
+                                <span class="w-icon">💧</span>
+                                <div class="detail-text">
+                                    <p>Humidity</p>
+                                    <strong id="humidity-val">--</strong>
+                                </div>
+                            </div>
+                            <div class="weather-detail-item">
+                                <span class="w-icon">💨</span>
+                                <div class="detail-text">
+                                    <p>Wind</p>
+                                    <strong id="wind-val">--</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         
-            <div class="pollutants">
+            <div class="card chart-card">
+                <h3>AQI Forecast & Daily Trend</h3>
+                <div class="chart-container">
+                    <canvas id="aqiChart"></canvas>
+                </div>
+            </div>
+        
+            <div class="pollutants card">
                 <h3>Pollutants</h3>
                 <ul id="pollutant-list"></ul>
             </div>
@@ -64,9 +119,45 @@
         
         <div id="welcome-msg" class="welcome-box">
             <h2>🌏 Check Real-time Air Quality</h2>
-            <p>Enter a city name in the top bar to get started.</p>
+            <p>Enter a city name above or use your location.</p>
+        
+            <button id="locate-btn" class="locate-btn">
+                📍 Use My Current Location
+            </button>
+        
+            <div class="popular-cities">
+                <p class="popular-title">Or check popular cities:</p>
+                <div class="cities-grid">
+                    <div class="city-card" onclick="getAQIData('Delhi')">
+                        <span class="city-flag">IN</span>
+                        <span>Delhi</span>
+                    </div>
+                    <div class="city-card" onclick="getAQIData('New York')">
+                        <span class="city-flag">US</span>
+                        <span>New York</span>
+                    </div>
+                    <div class="city-card" onclick="getAQIData('London')">
+                        <span class="city-flag">GB</span>
+                        <span>London</span>
+                    </div>
+                    <div class="city-card" onclick="getAQIData('Tokyo')">
+                        <span class="city-flag">JP</span>
+                        <span>Tokyo</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 AQI Tracker. Built with 💙 by <strong>AQUIB ANSARI</strong>.</p>
+            <div class="footer-links">
+                <a href="#" target="_blank">About</a>
+                <a href="https://aqicn.org/" target="_blank">Data Source</a>
+                <a href="https://github.com/Aquib1127/AQITrackerApp" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </footer>
 
     <script src="app.js"></script>
 </body>
