@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - AQI Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <h1 class="logo">AQI Tracker</h1>
+        </div>
+        <div class="nav-right">
+             <a href="index.html" class="home-btn">
+                <span>🏠</span> Home
+             </a>
+             
+             <button id="theme-toggle" class="theme-btn">🌙</button>
+        </div>
+    </nav>
+
+    <div class="app-container" style="margin-top: 40px;">
+        <div class="card about-card">
+            
+            <div class="about-header">
+                <h2>About This Project</h2>
+                <div class="header-line"></div>
+            </div>
+            
+            <p class="intro-text">
+                <strong>AQI Tracker</strong> is a real-time environmental monitoring dashboard designed to help users stay informed about the air quality in their city and around the globe.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h3>🚀 Real-time Data</h3>
+                    <p>Fetches live AQI scores from thousands of monitoring stations worldwide.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🩺 Health Indicators</h3>
+                    <p>Dynamic color-coded cards (Good to Hazardous) provide instant health guidance.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>⛅ Weather Integration</h3>
+                    <p>Displays live temperature, humidity, and wind speed alongside pollution data.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>📍 Geolocation</h3>
+                    <p>"Locate Me" feature to instantly check the air quality at your current position.</p>
+                </div>
+            </div>
+
+            <div class="tech-stack">
+                <h3>🛠️ Technology Stack</h3>
+                <div class="tech-badges">
+                    <span class="badge">HTML5</span>
+                    <span class="badge">CSS3 (Glassmorphism)</span>
+                    <span class="badge">JavaScript (ES6+)</span>
+                    <span class="badge">Chart.js</span>
+                    <span class="badge">WAQI API</span>
+                </div>
+            </div>
+
+            <div class="about-footer">
+                <p>Built with 💙 by <strong>AQUIB ANSARI</strong></p>
+                <p class="copyright">&copy; 2025 AQI Tracker. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById("theme-toggle");
+        themeToggle.addEventListener("click", () => {
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            if (isDark) {
+                document.documentElement.setAttribute("data-theme", "light");
+                themeToggle.innerText = "🌙";
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                themeToggle.innerText = "☀️";
+            }
+        });
+    </script>
+</body>
+</html>
